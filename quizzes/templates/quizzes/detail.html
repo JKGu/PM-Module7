@@ -1,0 +1,28 @@
+
+{% extends "quizzes/base.html" %}
+
+{% block content %}
+<div class="container mb-3">
+  <h1>{{ quiz.quiz_title }}</h1>
+
+  <br/>
+  <br/>
+
+  {% if quiz.question_set.all %}
+    <div class="row row-cols-1 mb-3">
+      {% for question in quiz.question_set.all %}
+      <div class="col themed-grid-col"><a href="{% url 'quizzes:detail' quiz.id %}">{{question.question_title}}<br/> {{question.question_text}}</a></div>
+    {% endfor %}
+      </div>
+      
+      {% else %}
+      <p>No questions are available.</p>
+      {% endif %}
+      <a href="{% url 'quizzes:index' %}" class="btn btn-primary btn-lg" tabindex="-1" role="button" aria-disabled="true">Return</a>
+     </div>
+     
+{% endblock %}
+
+
+
+

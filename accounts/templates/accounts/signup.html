@@ -1,0 +1,41 @@
+
+{% extends "quizzes/base.html" %}
+
+{% block content %}
+
+{% if error %}
+<br/>
+{{error}}
+<br/>
+{% endif %}
+
+<div class="container">
+<h1>Sign up</h1>
+<form method="POST" action="{% url 'signup' %}">
+    {% csrf_token %}
+    Username:
+    <br/>
+    <input type="text" name="username"/>
+    <br/>
+    Account Type:
+    <br/>
+    <input type="checkbox"  name="types" value="quiz_taker">
+    Quiz taker
+    <input type="checkbox"  name="types" value="quiz_maker">
+    Quiz maker
+    <input type="checkbox" name="types" value="quiz_admin">
+    admin
+    <br>
+    Password:
+    <br />
+    <input type="password" name="password"/>
+    <br/>
+    Confirm Password:
+    <br/>
+    <input type="password" name="passwordc"/>
+    <br/>
+    <br/>
+    <input type="submit" class="btn btn-primary btn-lg" value="Create Account"/>
+</form>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+
+{% extends "quizzes/base.html" %}
+
+{% block content %}
+<div class="container">
+    {% if user.is_authenticated %}
+    <h2 class="mt-4">All quizzes</h2>
+  
+    {% if quiz_list %}
+    <div class="row row-cols-12 mb-3">
+    {% for quiz in quiz_list %}
+      <div class="col themed-grid-col"><a href="{% url 'quizzes:detail' quiz.id %}">{{ quiz.quiz_title }}</a></div>
+    {% endfor %}
+      </div>
+    {% else %}
+    <p>No quizzes are available.</p>
+    {% endif %}
+    {% else %}
+    <h1>You have to login to view all quizzes!</h1>
+    {% endif %}
+     </div>
+{% endblock %}
+
+
+
+
+

@@ -1,0 +1,29 @@
+
+{% extends "quizzes/base.html" %}
+
+{% block content %}
+
+{% if error %}
+<br/>
+{{error}}
+<br/>
+{% endif %}
+
+<div class="container">
+<h1>Login</h1>
+<form method="POST" action="{% url 'login' %}">
+    {% csrf_token %}
+    Username:
+    <br/>
+    <input type="text" name="username"/>
+    <br/>
+    Password:
+    <br />
+    <input type="password" name="password"/>
+    <br/>
+
+    <br/>
+    <input type="submit" class="btn btn-primary btn-lg" value="Login"/>
+</form>
+</div>
+{% endblock %}
