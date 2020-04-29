@@ -3,9 +3,6 @@ from django.contrib.auth.models import User
 from django.contrib import auth
 from django.contrib.auth.models import Group
 
-# Create your views here.\
-
-
 
 def signup(request):
     if request.method == 'POST':
@@ -39,6 +36,5 @@ def login(request):
     return render(request, 'accounts/login.html')
 
 def logout(request):
-    if request.method == 'POST':
-        auth.logout(request)
-        return redirect('index')
+    auth.logout(request)
+    return redirect('index')

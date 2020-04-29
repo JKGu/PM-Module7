@@ -77,13 +77,13 @@ WSGI_APPLICATION = 'quizproject.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'quizdb',
-        'USER': 'steve',
-        'PASSWORD': 'GJK0119kjg',
-        'HOST': 'localhost',
-        'PORT': '',
+ 'default': {
+     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+     'NAME': 'quizdb',
+     'USER': 'steve',
+     'PASSWORD': 'GJK0119kjg',
+     'HOST': 'localhost',
+     'PORT': '',
     }
 }
 

@@ -1,17 +1,47 @@
-
+<!--The Question List-->
 {% extends "quizzes/base.html" %}
 
 {% block content %}
 <div class="container mb-3">
+  
   <h1>{{ quiz.quiz_title }}</h1>
+    <div>
+      <h5>Create a new Question</h5>
 
+        <form action="{% url 'quizzes:create_question' %}" method="POST">
+          {% csrf_token %}
+          <input type="hidden" value="{{quiz.id}}" name='quiz_id'>
+          <div class="form-group">
+            <label for="title">Question Title</label>
+            <input type="text" name="question_title" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="title">Question Text</label>
+            <input type="text" name="question_text" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="checkbox-inline">
+              <input type="checkbox" value="1" name="is_multi" checked> Is multi answer
+            </label>
+          </div>
+          <input type="submit" class="btn btn-primary btn-sm mt-2" value="Create Question">
+        </form>
+
+    </div>
   <br/>
   <br/>
-
+  <h4>All Questions</h4>
   {% if quiz.question_set.all %}
     <div class="row row-cols-1 mb-3">
       {% for question in quiz.question_set.all %}
-      <div class="col themed-grid-col"><a href="{% url 'quizzes:detail' quiz.id %}">{{question.question_title}}<br/> {{question.question_text}}</a></div>
+      <div class="col-8 themed-grid-col">
+        <a href="{% url 'quizzes:detail_question' quiz.id question.id %}">
+          {{question.question_title}}<br/> {{question.question_text}}
+        </a>
+      </div>
+      <div class="col-4 themed-grid-col">
+        <a href="{% url 'quizzes:delete_question' question.id %}" class="btn btn-danger btn-sm">Delete</a>
+      </div>
     {% endfor %}
       </div>
       

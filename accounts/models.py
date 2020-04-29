@@ -1,10 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser 
-'''
-class User(AbstractUser):
-    is_taker = models.BooleanField(default=False)
-    is_maker = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
 
+# class User(AbstractUser):
+#     is_taker = models.BooleanField(default=False)
+#     is_maker = models.BooleanField(default=False)
+#     is_admin = models.BooleanField(default=False)
 
-'''
+#     def __str__(self):
+#         return self.username
+    
