@@ -58,19 +58,19 @@
         {% if user.is_authenticated %}
         <div class="d-flex flex-row float-right">
           <div class="mr-5">Welcome, {{ user.username }}</div>
-          <!--
+          
           {% if user|has_group:'quiz_taker' %}
             <div class="mr-2"><a href="{% url 'quizzes:taker_index' %}" class="text-info pl-1">Quiz Taker</a></div>
           {% endif %}
-          -->
+          
           {% if user|has_group:'quiz_maker' %}
             <div class="mr-2"><a href="{% url 'index' %}" class="text-info pl-1">Quiz Maker</a></div>
           {% endif %}
-          <!--
+          
           {% if user|has_group:'quiz_admin' %}
             <div class="mr-2"><a href="{% url 'quizzes:admin_index' %}" class="text-info pl-1">Admin</a></div>
           {% endif %}
-          -->
+          
           <div class="mr-2"><a href="{% url 'logout' %}" class="text-info pl-1">Logout</a></div>
         </div>
         {% else %}

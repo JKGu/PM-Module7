@@ -29,8 +29,11 @@ def login(request):
         user = auth.authenticate(username=request.POST['username'],password=request.POST['password'])
         if user is not None:
             auth.login(request, user)
-            #return render(request, 'quizzes/index.html')
-            return redirect('index')
+            if has_group(user, 'quiz_admin'):
+                return redirect('quizzes:admin_index')
+            if has_group(user, 'quiz_maker'):
+                return redirect('index')
+            return redirect('quizzes:taker_index')
         else:
             return render(request, 'accounts/login.html',{'error':'Username and password did not match'})
     return render(request, 'accounts/login.html')
@@ -38,3 +41,7 @@ def login(request):
 def logout(request):
     auth.logout(request)
     return redirect('index')
+
+def has_group(user, group_name):
+    groups = user.groups.all().values_list('name', flat=True)
+    return True if group_name in groups else False
