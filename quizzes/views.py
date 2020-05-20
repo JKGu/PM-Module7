@@ -1,28 +1,32 @@
-from django.shortcuts import render, get_object_or_404
-from django.shortcuts import redirect
+from django.shortcuts import render, get_object_or_404,reverse,redirect
+
 import json
 from django.http import HttpResponseRedirect
 
-from .models import Quiz, Question, Answer
+from .models import Quizzes, Question, Answer
+from django.contrib.auth.models import Group,User
+from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
 def index(request):
-    quiz_list = Quiz.objects.order_by('quiz_title')
+    quiz_list = Quizzes.objects.order_by('quiz_title')
+    print(quiz_list,"okokok")
     context = {'quiz_list':quiz_list}
-    return render(request, 'quizzes/index.html', context)
+    return render(request, 'quizzes/maker_index.html', context)
 
 def detail(request, quiz_id): #detail of quiz
-    quiz = get_object_or_404(Quiz, pk=quiz_id)
-    return render(request, 'quizzes/detail.html', {'quiz': quiz})
+    quiz = get_object_or_404(Quizzes, pk=quiz_id)
+    return render(request, 'quizzes/maker_detail.html', {'quiz': quiz})
 
 def detail_question(request, quiz_id, question_id):
     question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'quizzes/answers.html', {'question': question})
+    return render(request, 'quizzes/maker_answers.html', {'question': question})
 
 def detail_answer(request, quiz_id, question_id, answer_id):
     return
 
 def delete(request, quiz_id):
-    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    quiz = get_object_or_404(Quizzes, pk=quiz_id)
     quiz.delete()
     return redirect('index')
 
@@ -42,10 +46,16 @@ def create(request):
     quiz_description = params_data['quiz_description']
     quiz_difficulty = params_data['quiz_difficulty']
 
-    quiz = Quiz()
+    quiz = Quizzes()
     quiz.quiz_title = quiz_title
     quiz.quiz_description = quiz_description
     quiz.quiz_difficulty = quiz_difficulty
+    taker_ = Group.objects.get_or_create(name='quiz_taker')[0]
+    data = {}
+    for i in taker_.user_set.all():
+        data[str(i.pk)] = {'score':'N/A','taken_on':''}
+
+    quiz.scores = data
     quiz.save()
 
     return redirect('index')
@@ -63,7 +73,7 @@ def create_question(request):
     question.question_title = question_title
     question.question_text = question_text
     question.is_multi_answer = is_multi
-    question.quiz_foreign_key = Quiz.objects.get(pk=quiz_id)
+    question.quiz_foreign_key = Quizzes.objects.get(pk=quiz_id)
     question.save()
     return redirect('quizzes:detail', quiz_id=quiz_id)
 
@@ -85,11 +95,49 @@ def create_answer(request):
     answer.question_foreign_key = Question.objects.get(pk=question_id)
     answer.save()
     return HttpResponseRedirect(params_data['next'])
-    
+
 def taker_index(request):
-    quiz_list = Quiz.objects.order_by('quiz_title')
+    quiz_list = Quizzes.objects.order_by('quiz_title')
+    for i in quiz_list:
+        data = i.scores
+        if str(request.user.pk) in data.keys():
+            pass
+        else:
+            data[str(request.user.pk)] = {'score':'N/A','taken_on':''}
+
+        i.scores = data
+        i.save()
     context = {'quiz_list':quiz_list}
     return render(request, 'quizzes/taker_index.html', context)
+def taker_detail(request,id):
+    quiz = get_object_or_404(Quizzes, pk=id)
+    if request.method == "POST":
+        data = request.POST
+        points = 0
+        question_ans_dict = {}
+        for ques in quiz.question_set.all():
+            question_ans_dict[ques.pk] = []
 
+            ans_list = [Answer.objects.get(pk=int(i.split("_")[-1])) for i in data.getlist(f"question_{str(ques.pk)}")]
+            correct_ans = list(ques.answer_set.all().filter(is_correct_answer=True))
+
+            for ans in ans_list:
+                question_ans_dict[ques.pk].append(ans.pk)
+                points+=ans.number_of_points
+
+            user_data = quiz.scores
+            user_data[str(request.user.pk)] = {'score':points,'taken_on':timezone.now().strftime("%m/%d/%Y %I:%M:%S %p ")}
+
+            quiz.scores = user_data
+            quiz.save()
+
+        return render(request, 'quizzes/quiz_taker_result.html', {'quiz':quiz,'user_info':question_ans_dict,'question_ans_dict':json.dumps(question_ans_dict),'points':points})
+    return render(request, 'quizzes/quiz_taker_detail.html', {'quiz':quiz})
+
+@login_required(login_url="login")
 def admin_index(request):
-    return render(request, 'quizzes/admin_index.html')    
+    users = User.objects.all().order_by("username")
+    return render(request, 'quizzes/admin_index.html',{'users':users})
+
+
+

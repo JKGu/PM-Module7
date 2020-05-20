@@ -1,0 +1,51 @@
+<!--The Quiz List-->
+{% extends "quizzes/base.html" %}
+
+{% block content %}
+<div class="container">
+    {% if user.is_authenticated %}
+    <div>
+      <h2>Create Quiz</h2>
+        <form action="{% url 'quizzes:create' %}" method="POST">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="title">Quiz Title</label>
+            <input type="text" name="quiz_title" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="title">Quiz Description</label>
+            <input type="text" name="quiz_description" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="title">Quiz Difficulty</label>
+            <input type="number" name="quiz_difficulty" class="form-control">
+          </div>
+          <input type="submit" class="btn btn-primary btn-sm mt-2" value="Create Quiz">
+        </form>
+    </div>
+    <h2 class="mt-4">All quizzes</h2>
+    {% if quiz_list %}
+    <div class="row">
+    {% for quiz in quiz_list %}
+      <div class="col-8 themed-grid-col">
+        <a href="{% url 'quizzes:detail' quiz.id %}">{{ quiz.quiz_title }}</a>
+      </div>
+      <div class="col-4 themed-grid-col">
+        <a href="{% url 'quizzes:delete' quiz.id %}" class="btn btn-danger btn-sm">Delete</a>
+      </div>
+
+    {% endfor %}
+      </div>
+    {% else %}
+    <p>No quizzes are available.</p>
+    {% endif %}
+    {% else %}
+    <h1>You have to login to view all quizzes!</h1>
+    {% endif %}
+     </div>
+{% endblock %}
+
+
+
+
+

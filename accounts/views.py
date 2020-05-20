@@ -9,17 +9,26 @@ def signup(request):
         if request.POST['password'] == request.POST['passwordc']:
             try:
                 user = User.objects.get(username=request.POST['username'])
-                return render(request, 'accounts/signup.html',{'error':'Username already exists!'})
-            except User.DoesNotExist:
-                user = User.objects.create_user(request.POST['username'], password = request.POST['password']) 
                 groups = request.POST.getlist('types')
+                return render(request, 'accounts/signup.html',{'error':'Username already exists!','data':request.POST,'groups':groups})
+            except User.DoesNotExist:
+                groups = request.POST.getlist('types')
+                if len(groups) == 0:
+                    return render(request, 'accounts/signup.html',{'error':'You must select alteast one type.','data':request.POST,'groups':groups})
+                user = User.objects.create_user(request.POST['username'], password = request.POST['password'])
+
                 for x in groups:
-                    group = Group.objects.get(name=x) 
+                    group = Group.objects.get_or_create(name=x)[0]
                     group.user_set.add(user)
                 auth.login(request, user)
-                return redirect('index')
+                if has_group(user, 'quiz_admin'):
+                    return redirect('quizzes:admin_index')
+                if has_group(user, 'quiz_maker'):
+                    return redirect('index')
+                return redirect('quizzes:taker_index')
         else:
-            return render(request, 'accounts/signup.html',{'error':'Password must match'})
+            groups = request.POST.getlist('types')
+            return render(request, 'accounts/signup.html',{'error':'Password must match','data':request.POST,'groups':groups})
 
     else:
         return render(request, 'accounts/signup.html')
@@ -27,6 +36,15 @@ def signup(request):
 def login(request):
     if request.method == 'POST':
         user = auth.authenticate(username=request.POST['username'],password=request.POST['password'])
+
+        try:
+            user_ = User.objects.get(username=request.POST['username'])
+            if not user_.is_active:
+                return render(request, 'accounts/login.html',{'error':'Your account is suspended'})
+
+        except User.DoesNotExist:
+            pass
+            
         if user is not None:
             auth.login(request, user)
             if has_group(user, 'quiz_admin'):
@@ -45,3 +63,4 @@ def logout(request):
 def has_group(user, group_name):
     groups = user.groups.all().values_list('name', flat=True)
     return True if group_name in groups else False
+

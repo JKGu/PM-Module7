@@ -1,0 +1,73 @@
+{% extends "quizzes/base.html" %}
+
+{% block content %}
+<script>
+  $(document).ready(function(){
+    $("#answer_form").submit(function(){
+
+      var is_valid = true
+      $(this).find(".form_card").map(function(i) {
+        if($(this).find(".checkbox_required").length > 0){
+          if(!($(this).find('.checkbox_required :checkbox:checked').length > 0)){
+            alert("Please select alteast one checkbox in question "+(i+1));
+            is_valid = false
+          }
+        }
+        if($(this).find(".radio_grp").length > 0){
+          if(!($(this).find('.radio_grp :radio:checked').length > 0)){
+            alert("Please select an option in question "+(i+1));
+            is_valid = false
+          }
+        }
+      })
+      return is_valid
+    })
+  })
+</script>
+
+<div class="container mb-3">
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <h1>{{ quiz.quiz_title }}</h1>
+  </nav>
+
+  <br/>
+  <br/>
+
+    {% if quiz.question_set.all %}
+      <div class="row">
+        <form method="post" style="width:90%" id="answer_form">
+          {% csrf_token %}
+          {% for question in quiz.question_set.all %}
+            <div class="col-12 my-2">
+              <div class="card form_card">
+                <div class="card-header">Question: {{question.question_text}}</div>
+                <div class="card-body">
+                    <!-- {{ question.is_multi_answer }} -->
+                    {% for answer in question.answer_set.all %}
+                      {% if question.is_multi_answer %}
+                        <div class="custom-control custom-checkbox checkbox_required my-2">
+                          <input type="checkbox" class="custom-control-input" name="question_{{question.pk}}" id="answer_{{answer.pk}}" value="answer_{{answer.pk}}">
+                          <label class="custom-control-label" for="answer_{{answer.pk}}">{{answer.answer_text}}</label>
+                        </div>
+                      {% else %}
+                        <div class="custom-control custom-radio radio_grp my-2">
+                          <input type="radio" class="custom-control-input" name="question_{{question.pk}}" id="answer_{{answer.pk}}" value="answer_{{answer.pk}}">
+                          <label class="custom-control-label" for="answer_{{answer.pk}}">{{answer.answer_text}}</label>
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                </div>
+              </div>
+          </div>
+          {% endfor %}
+          <input type="submit" class="btn btn-primary ml-3">
+        </form>
+      </div>
+    {% else %}
+      <p>No questions are available.</p>
+    {% endif %}
+
+
+</div>
+{% endblock %}

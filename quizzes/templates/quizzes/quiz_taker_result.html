@@ -1,0 +1,107 @@
+{% extends "quizzes/base.html" %}
+
+{% block content %}
+
+<style media="screen">
+  .radio,.checkbox{
+    background-color:#fe7e7c;
+  }
+  .radio_correct,.checkbox_correct{
+    background-color:#79d279;
+  }
+</style>
+<div class="container mb-3">
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <h1>{{ quiz.quiz_title }}</h1>
+    <p class="ml-auto">Score: {{ points }}</p>
+  </nav>
+
+  <br/>
+  <br/>
+
+    {% if quiz.question_set.all %}
+      <div class="row">
+        <form method="post" style="width:90%" id="answer_form">
+          {% csrf_token %}
+          {% for question in quiz.question_set.all %}
+            <div class="col-12 my-2">
+              <div class="card">
+                <div class="card-header">Question: {{question.question_text}}</div>
+                <div class="card-body">
+                    <!-- {{ question.is_multi_answer }} -->
+                    {% for answer in question.answer_set.all %}
+                      {% if question.is_multi_answer %}
+                        {% if answer.is_correct_answer %}
+                          <div class="checkbox_correct my-2 rounded d-flex">
+                            <input type="checkbox" class="ml-2 mt-2" name="question_{{question.pk}}" id="answer_{{answer.pk}}" value="answer_{{answer.pk}}">
+                            <label for="answer_{{answer.pk}}" class="ml-2">{{answer.answer_text}}</label>
+                            <span class="ml-auto mr-2 text-success">&#10003;</span>
+                          </div>
+                        {% else %}
+                          {% if answer.pk in user_info|lookup:question.pk %}
+                            <div class="checkbox my-2 rounded d-flex">
+                              <input type="checkbox" class="ml-2 mt-2" name="question_{{question.pk}}" id="answer_{{answer.pk}}" value="answer_{{answer.pk}}">
+                              <label for="answer_{{answer.pk}}" class="ml-2">{{answer.answer_text}}</label>
+                              <span class="ml-auto mr-2 text-danger">&#10005;</span>
+                            </div>
+                          {% else %}
+                            <div class="my-2 d-flex">
+                              <input type="checkbox" class="ml-2 mt-2" name="question_{{question.pk}}" id="answer_{{answer.pk}}" value="answer_{{answer.pk}}">
+                              <label for="answer_{{answer.pk}}" class="ml-2">{{answer.answer_text}}</label>
+                            </div>
+                          {% endif %}
+                        {% endif %}
+                      {% else %}
+                        {% if answer.is_correct_answer %}
+                          <div class="radio_correct my-2 rounded d-flex">
+                            <input type="radio" class="ml-2 mt-2" name="question_{{question.pk}}" id="answer_{{answer.pk}}" value="answer_{{answer.pk}}">
+                            <label for="answer_{{answer.pk}}" class="ml-2">{{answer.answer_text}}</label>
+                            <span class="ml-auto mr-2 text-success">&#10003;</span>
+                          </div>
+                        {% else %}
+                          {% if answer.pk in user_info|lookup:question.pk %}
+                            <div class="radio my-2 rounded d-flex">
+                              <input type="radio" class="ml-2 mt-2" name="question_{{question.pk}}" id="answer_{{answer.pk}}" value="answer_{{answer.pk}}">
+                              <label for="answer_{{answer.pk}}" class="ml-2">{{answer.answer_text}}</label>
+                              <span class="ml-auto mr-2 text-danger">&#10005;</span>
+                            </div>
+                          {% else %}
+                            <div class="my-2 d-flex">
+                              <input type="radio" class="ml-2 mt-2" name="question_{{question.pk}}" id="answer_{{answer.pk}}" value="answer_{{answer.pk}}">
+                              <label for="answer_{{answer.pk}}" class="ml-2">{{answer.answer_text}}</label>
+                            </div>
+                          {% endif%}
+                        {% endif %}
+
+                      {% endif %}
+                    {% endfor %}
+                </div>
+              </div>
+          </div>
+          {% endfor %}
+        </form>
+        <script>
+          $(document).ready(function(){
+            var question_ans_dict = JSON.parse("{{question_ans_dict}}".replace(/&quot;/g,"\""))
+            console.log(question_ans_dict);
+            Object.keys(question_ans_dict).map((item,i)=>{
+              question_ans_dict[item].map((ans,i)=>{
+                $("#answer_form").find(`#answer_${ans}`).prop("checked","checked")
+              })
+            })
+
+            $("input[type=checkbox],input[type=radio] ").map(function(){
+              $(this).prop("disabled",true)
+            })
+          })
+        </script>
+    {% else %}
+      <p>No questions are available.</p>
+    {% endif %}
+
+</div>
+<a href="{% url 'quizzes:taker_index' %}" class="btn btn-primary btn-lg" tabindex="-1" role="button" aria-disabled="true">Return</a>
+
+</div>
+{% endblock %}

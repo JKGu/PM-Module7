@@ -9,11 +9,25 @@
     <div class="row">
     {% for quiz in quiz_list %}
       <div class="col-8 themed-grid-col">
-        <a href="{% url 'quizzes:detail' quiz.id %}">{{ quiz.quiz_title }}</a>
+        <a href="{% url 'quizzes:taker_detail' quiz.id %}">{{ quiz.quiz_title }}</a>
       </div>
+      {% with score=quiz.scores|get_score:request.user.pk %}
       <div class="col-4 themed-grid-col">
-        
+        Score:
+              {% if score.score == "" %}
+               N/A
+              {% else %}
+                {{score.score}}
+              {% endif %}
+        <br>
+        Taken on:
+              {% if not score.taken_on == '' %}
+                {{ score.taken_on }}UTC
+              {% else %}
+                N/A
+              {% endif %}
       </div>
+      {% endwith %}
 
     {% endfor %}
       </div>
@@ -25,8 +39,3 @@
     {% endif %}
      </div>
 {% endblock %}
-
-
-
-
-

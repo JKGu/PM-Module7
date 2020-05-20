@@ -18,4 +18,11 @@ urlpatterns = [
     path('create-answer/', views.create_answer, name='create_answer'),
     path('taker_index/', views.taker_index, name='taker_index'),
     path('admin_index/', views.admin_index, name='admin_index'),
+
+    path('taker_detail/<int:id>/',views.taker_detail,name='taker_detail'),
+
+
+
+
+
 ]

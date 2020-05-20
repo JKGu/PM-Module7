@@ -6,12 +6,15 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Jekyll v3.8.6">
-    
+
     <title>Quiz App</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.4/examples/grid/">
 
     <!-- Bootstrap core CSS -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <!-- Favicons -->
@@ -40,7 +43,7 @@
           font-size: 3.5rem;
         }
       }
-      
+
       .themed-grid-col {
         padding-top: 15px;
         padding-bottom: 15px;
@@ -57,20 +60,20 @@
         The Online Quiz App
         {% if user.is_authenticated %}
         <div class="d-flex flex-row float-right">
-          <div class="mr-5">Welcome, {{ user.username }}</div>
-          
-          {% if user|has_group:'quiz_taker' %}
+          <div class="mr-5">Welcome, {{ request.user.username }}</div>
+
+          {% if request.user|has_group:'quiz_taker' %}
             <div class="mr-2"><a href="{% url 'quizzes:taker_index' %}" class="text-info pl-1">Quiz Taker</a></div>
           {% endif %}
-          
-          {% if user|has_group:'quiz_maker' %}
+
+          {% if request.user|has_group:'quiz_maker' %}
             <div class="mr-2"><a href="{% url 'index' %}" class="text-info pl-1">Quiz Maker</a></div>
           {% endif %}
-          
-          {% if user|has_group:'quiz_admin' %}
+
+          {% if request.user|has_group:'quiz_admin' %}
             <div class="mr-2"><a href="{% url 'quizzes:admin_index' %}" class="text-info pl-1">Admin</a></div>
           {% endif %}
-          
+
           <div class="mr-2"><a href="{% url 'logout' %}" class="text-info pl-1">Logout</a></div>
         </div>
         {% else %}

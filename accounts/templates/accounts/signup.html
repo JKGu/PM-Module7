@@ -5,7 +5,7 @@
 
 {% if error %}
 <br/>
-{{error}}
+<p style="color:red">{{error}}</p>
 <br/>
 {% endif %}
 
@@ -13,18 +13,34 @@
 <h1>Sign up</h1>
 <form method="POST" action="{% url 'signup' %}">
     {% csrf_token %}
+
     Username:
     <br/>
-    <input type="text" name="username"/>
+    <input type="text" name="username" value="{{ data.username }}"/>
     <br/>
     Account Type:
     <br/>
-    <input type="checkbox"  name="types" value="quiz_taker">
+    {% if "quiz_taker" in groups %}
+      <input type="checkbox"  name="types" value="quiz_taker" checked>
+    {% else %}
+      <input type="checkbox"  name="types" value="quiz_taker">
+    {% endif %}
     Quiz taker
-    <input type="checkbox"  name="types" value="quiz_maker">
+
+    {% if "quiz_maker" in groups %}
+      <input type="checkbox"  name="types" value="quiz_maker" checked>
+    {% else %}
+      <input type="checkbox"  name="types" value="quiz_maker">
+    {% endif %}
     Quiz maker
-    <input type="checkbox" name="types" value="quiz_admin">
-    admin
+
+    {% if "quiz_admin" in groups %}
+      <input type="checkbox"  name="types" value="quiz_admin" checked>
+    {% else %}
+      <input type="checkbox"  name="types" value="quiz_admin">
+    {% endif %}
+    Admin
+
     <br>
     Password:
     <br />
