@@ -20,7 +20,11 @@ urlpatterns = [
     path('admin_index/', views.admin_index, name='admin_index'),
 
     path('taker_detail/<int:id>/',views.taker_detail,name='taker_detail'),
+    path('user_details/<int:user_id>/',views.user_details,name='user_details'),
 
+    path('suspend_user/<int:user_id>/',views.suspend_user,name="suspend_user"),
+    path('reinstate_user/<int:user_id>/',views.reinstate_user,name="reinstate_user"),
+    path('delete_user/<int:user_id>/',views.delete_user,name="delete_user"),
 
 
 

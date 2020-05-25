@@ -1,6 +1,56 @@
 {% extends "quizzes/base.html" %}
-<!--Detail page for admin-->
+
 
 {% block content %}
+<div class="container mb-3">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <h1>{{ user.username }}</h1>
+  </nav>
+  <div class="row">
+    <div class="col themed-grid-col"><strong>Joined on:</strong></div>
+    <div class="col themed-grid-col">{{user.date_joined}}</div>
+  </div>
 
+  <div class="row mt-3">
+    <div class="col themed-grid-col"><strong>Last login:</strong></div>
+    <div class="col themed-grid-col">{{user.last_login}}</div>
+  </div>
+  <div class="row mt-3">
+    <div class="col themed-grid-col"><strong>Roles:</strong></div>
+    <div class="col themed-grid-col">
+      <form method="post" action="{% url 'update_role' user.pk%}">
+        {% csrf_token %}
+        <div class="form-group">
+          {% if user.groups.all|call_method:'quiz_taker' %}
+            <input type="checkbox" value="quiz_taker" name='roles' checked>
+          {% else %}
+            <input type="checkbox" value="quiz_taker" name='roles'>
+          {% endif %}
+          <label>Quiz taker</label>
+        </div>
+        <div class="form-group">
+          {% if user.groups.all|call_method:'quiz_admin' %}
+            <input type="checkbox" value="quiz_admin" name='roles' checked>
+          {% else %}
+            <input type="checkbox" value="quiz_admin" name='roles'>
+          {% endif %}
+          <label>Quiz admin</label>
+        </div>
+        <div class="form-group">
+          {% if user.groups.all|call_method:'quiz_maker' %}
+            <input type="checkbox" value="quiz_maker" name='roles' checked>
+          {% else %}
+            <input type="checkbox" value="quiz_maker" name='roles'>
+          {% endif %}
+
+          <label>Quiz maker</label>
+        </div>
+
+        <input type="submit" class="btn btn-outline-info" value="Save">
+      </form>
+    </div>
+  </div>
+
+  <a role="button" class="btn btn-primary" href="{% url 'quizzes:admin_index'%}">Return</a>
+</div>
 {% endblock %}

@@ -64,3 +64,20 @@ def has_group(user, group_name):
     groups = user.groups.all().values_list('name', flat=True)
     return True if group_name in groups else False
 
+def update_role(request,user_id):
+    if request.method == 'POST':
+        user = User.objects.get(pk=user_id)
+        if 'quiz_admin' in list(request.user.groups.all().values_list("name",flat=True)):
+
+            for x in ['quiz_admin','quiz_maker','quiz_taker']:
+                group = Group.objects.get(name=x)
+                group.user_set.remove(user)
+
+            for x in list(request.POST.getlist('roles')):
+                group = Group.objects.get(name=x)
+                group.user_set.add(user)
+
+
+            return redirect(f'/user_details/{user_id}/')
+
+        return redirect("login")

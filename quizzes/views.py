@@ -139,5 +139,30 @@ def admin_index(request):
     users = User.objects.all().order_by("username")
     return render(request, 'quizzes/admin_index.html',{'users':users})
 
+def user_details(request,user_id):
+    if 'quiz_admin' not in list(request.user.groups.all().values_list("name",flat=True)):
+        return redirect("index")
+    user = User.objects.get(pk=user_id)
+    return render(request,"quizzes/user_details.html",{"user":user})
 
 
+def delete_user(request,user_id):
+    user = User.objects.get(pk=user_id)
+    user.delete()
+
+    return HttpResponseRedirect(reverse("quizzes:admin_index"))
+
+
+def suspend_user(request,user_id):
+    user = User.objects.get(pk=user_id)
+    user.is_active = False
+    user.save()
+
+    return HttpResponseRedirect(reverse("quizzes:admin_index"))
+
+def reinstate_user(request,user_id):
+    user = User.objects.get(pk=user_id)
+    user.is_active = True
+    user.save()
+
+    return HttpResponseRedirect(reverse("quizzes:admin_index"))
